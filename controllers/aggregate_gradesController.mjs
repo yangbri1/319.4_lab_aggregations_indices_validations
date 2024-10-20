@@ -21,36 +21,9 @@ async function getWeightedGrades(req, res){
               '$project': {
                 '_id': 0, 
                 'student_id': 1, 
-                'totalStudentBody': {
-                  '$cond': {
-                    'if': {
-                      '$isNumber': '$student_id'
-                    }, 
-                    'then': {
-                      '$sum': 1
-                    }, 
-                    'else': 0
-                  }
-                }, 
                 'class_id': 1, 
                 'avg': {
                   '$avg': '$scores.score'
-                }, 
-                'avgGt70': {
-                  '$gt': [
-                    'avg', 70
-                  ]
-                }, 
-                'studentsAbove70': {
-                  '$cond': [
-                    {
-                      '$gt': [
-                        'avg', 70
-                      ]
-                    }, {
-                      '$sum': 1
-                    }, 0
-                  ]
                 }
               }
             }, {
@@ -60,8 +33,13 @@ async function getWeightedGrades(req, res){
                 }
               }
             }, {
-              '$count': 'studentsAbove70'
-            }
+              '$group': {
+                '_id': 'studentAbove70', 
+                'studentAbove70': {
+                  '$sum': 1
+                }
+              }
+            }, 
           ])
             .toArray(); // .toArray() method required here since we're dealing w/ an array of objs
 
