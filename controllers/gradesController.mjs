@@ -41,6 +41,7 @@ async function getStudentGrades(req, res){
     }
 }   
 
+// get grades by class id
 async function getClassGrades(req, res){
 
     try {
@@ -77,25 +78,31 @@ async function studentClassesAvg(req, res){
     try {
         // 1. specify collection -- await b/c async function
         let collection = await db.collection('grades');
+
         // 2. specify action -- aggregation pipeline is an array of objects
-        
         let results = await collection.aggregate([
-            // this aggregate pipeline is from Codesandbox -- more can be made from MongoDB Compass
+            /* this aggregate pipeline is from Codesandbox -- more can be made from MongoDB Compass */
+            // $match stage filters douments from collection to only include student_id that matches the id provided in the req.params.id
             {
               $match: { student_id: Number(req.params.id) },
             },
+            // $unwind stage -- below is equivalent to $unwind: { "$scores" } as "path" syntax is optional
+            // similar to JS array .flat() method which flattens nested arrays [[]] -> []
+            /* here $unwind "flattens" scores array in each document --- aka if there's multiple entries in scores array,
+            each score is treated as a separate document */
             {
               $unwind: { path: "$scores" },
             },
+            // $group stage groups documents by class_id & organize the scores into arrays based on assignment type
             {
               $group: {
                 _id: "$class_id",
                 quiz: {
                   $push: {
                     $cond: {
-                      if: { $eq: ["$scores.type", "quiz"] },
-                      then: "$scores.score",
-                      else: "$$REMOVE",
+                      if: { $eq: ["$scores.type", "quiz"] }, // if score is of type "quiz" ...
+                      then: "$scores.score",                 // include "quiz" score
+                      else: "$$REMOVE",                      // if score type is NOT "quiz" remove document
                     },
                   },
                 },
@@ -119,10 +126,12 @@ async function studentClassesAvg(req, res){
                 },
               },
             },
+            // $project stage output format of documents
             {
               $project: {
-                _id: 0,
-                class_id: "$_id",
+                _id: 0,             // DN show _id field in output
+                class_id: "$_id",   // rename _id as class_id in output
+                // calculates weighted average of scores by given weight
                 avg: {
                   $sum: [
                     { $multiply: [{ $avg: "$exam" }, 0.5] },
@@ -139,6 +148,7 @@ async function studentClassesAvg(req, res){
 
     } catch (err) {
         console.error(err);
+        // set a customer error code & return a JSON string of object to browser, Thunder-Client, Postman
         res.status(500).json({msg: "Server Error"});
     }
 }

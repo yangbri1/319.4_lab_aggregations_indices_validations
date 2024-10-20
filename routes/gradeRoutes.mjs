@@ -3,7 +3,9 @@ import express from 'express';
 // import db from '../db/conn.mjs';
 import gradesCTL from '../controllers/gradesController.mjs';
 // import gradesController from '../controllers/gradesController.mjs';
+import gradesCTL_v2 from '../controllers/aggregate_gradesController.mjs';
 
+// use Express' router for modular routes -- separation of concerns from server.mjs
 const router = express.Router();
 
 // Routes go here
@@ -12,6 +14,7 @@ const router = express.Router();
 // });
 
 // Get grades by ID
+/* Aside: no overlaps in path URL otherwise some of them may not run or overwrite the other */
 // why .route() here & not concatenate routes below? 2 get?
 router.route('/:id').get(gradesCTL.getSingleGrade);
 
@@ -27,19 +30,11 @@ router.post('/', gradesCTL.createGrades);
 // get weighted average for learner across all classes
 router.get('/learner/:id/avg', gradesCTL.studentClassesAvg);
 
-export default router;
+/* -------------------------- lab routes start below ---------------------------- */
+// get number of learners w/ weighted avg > 70%
+router.get('/grades/stats', gradesCTL_v2.getWeightedGrades);
 
-// // Imports
-// import express from 'express';
-// import gradesCTL from '../controllers/gradesController.mjs';
-// const router = express.Router();
-// // Get grades by ID
-// router.route('/:id').get(gradesCTL.getSingleGrade);
-// // Get student grades by studentid
-// router.get('/student/:id', gradesCTL.getStudentGrades)
-// // Get Class grades by classID
-// router.get('/class/:id', gradesCTL.getClassGrades)
-// export default router;
+export default router;
 
 // {
 //     "student_id": 13,
