@@ -32,6 +32,7 @@ const gradeSchema = {
             bsonType: "int",
             minimum: 0,
             maximum: 300,
+            /* pattern: ^(?:[1-9]?[0-9]|[12][0-9][0-9]|300)$ , // -- this regular expression is equivalent to bounds established above */
             // output description when criteria is missed
             description: "'class_id' must be an integer b/t 0-300 inclusively"
           },
@@ -39,10 +40,13 @@ const gradeSchema = {
           student_id: {
             bsonType: "int",
             minimum: 0,
+            /* pattern: ^[0-9]+$ , // -- regex that only accepts numbers [0, INF) */
             description: "'student_id' must be an integer at least 0 or greater"
           }
         }
-      }
+      },
+      // validationLevel: "strict",    // "strict" settings requires documents to have "class_id" & "student_id" fields that strictly follows respective validation rules
+      validationAction: "warn"         // change validation action to "warn" as instructed
 
 };
 
