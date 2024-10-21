@@ -17,6 +17,7 @@ async function getWeightedGrades(req, res){
         let collection = await db.collection("grades");
 
         // 2. specify action -- aggregation pipeline is an array of objects
+        // here "result" returns an array 
         let result = await collection.aggregate([
             // $project stage
             {
@@ -45,8 +46,22 @@ async function getWeightedGrades(req, res){
           ])
             .toArray(); // .toArray() method required here since we're dealing w/ an array of objs
 
+        // utilize MongoDB's .countDocuments() method to count total number of documents
+        // .estimatedDocumentCount() method is faster but less accurate
+        let number_of_documents = db.collection.countDocuments({});   // Note: no parameters -- count all documents regardless of conditions
+        
+        // assumption each student takes 10 clases so divide "number_of_documents" by 10 for approximate student body 
+        let student_body = Math.floor(number_of_documents / 10);
+
+        // calculate estimated number of students w/ an weighted avg about 70%
+        let estimate_students_70 = result.studentAbove70 / 10;
+
+        // ratio of students w/ a weighted avg above 70%
+        let students_ratio_70 =  estimate_students_70 / student_body;
+
         // 3. return results in JSON string format to browser, Thunder-Client, Postman, etc.
-        res.json(result);
+        // enclosed contents: number of stduents w/ weighted avg > 70%, total student body, ratio of above 70% to total body
+        res.json({result, student_body, students_ratio_70});
 
     } catch (err) {
         console.error(err);
@@ -113,12 +128,25 @@ async function getWeightedGradesByClass(req, res){
             }, {
               '$count': 'studentsAbove70'
             }
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
           ]).find(query) // .find() array method (not MongoDB query I don't think ...) to find 1st instance of "query"
+          // .find() returns the value from the 1st instance of "query" (class_id aka req.params :id)
 
           .toArray(); // .toArray() method require as we're dealing w/ an array of objects in aggregation pipeline
 
-        // 3. return results
-        res.json(result);
+          /* ------------ THIS IS A COPY-PASTA OF ABOVE GET ROUTE FOR JSON FORMAT ---------- */
+        
+          // assumption each student takes 10 clases so divide "number_of_documents" by 10 for approximate student body 
+        let student_body = Math.floor(number_of_documents / 10);
+
+        // calculate estimated number of students w/ an weighted avg about 70%
+        let estimate_students_70 = result.studentAbove70 / 10;
+
+        // ratio of students w/ a weighted avg above 70%
+        let students_ratio_70 =  estimate_students_70 / student_body;
+
+        // 3. return results in JSON string format to browser, Thunder-Client, Postman, etc.
+        res.json({result, student_body, students_ratio_70});
 
         // (custom errors would be here)
         // ...
