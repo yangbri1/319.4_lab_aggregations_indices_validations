@@ -20,7 +20,7 @@ async function getSingleGrade(req, res){
         console.error(err);
         res.status(500).json({msg: "Server Error"});
     }
-}
+};
 
 // Get grades by student id
 async function getStudentGrades(req, res){
@@ -39,7 +39,7 @@ async function getStudentGrades(req, res){
         console.error(err);
         res.status(500).json({msg: "Server Error"});
     }
-}   
+};   
 
 // get grades by class id
 async function getClassGrades(req, res){
@@ -58,7 +58,7 @@ async function getClassGrades(req, res){
         console.error(err);
         res.status(500).json({msg: "Server Error"});
     }
-}  
+};  
 
 // Create new grades in DB
 async function createGrades(req, res){
@@ -71,7 +71,7 @@ async function createGrades(req, res){
         console.error(err);
         res.status(500).json({msg: "Server Error"});
     }
-}
+};
 
 // ALL class averages for one learner
 async function studentClassesAvg(req, res){
@@ -151,6 +151,7 @@ async function studentClassesAvg(req, res){
         // set a customer error code & return a JSON string of object to browser, Thunder-Client, Postman
         res.status(500).json({msg: "Server Error"});
     }
-}
+};
+
 // export a function of many objs
 export default { getSingleGrade, getClassGrades, getStudentGrades, createGrades, studentClassesAvg  };

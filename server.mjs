@@ -85,11 +85,11 @@ const gradeSchema = {
 /* create index using Node driver (.createIndex method) */
 /* create a **single-field** index on "class_id"  */
 // produce a single key ascending index for "class_id" on gradeSchema
-gradeSchema.createIndex({ class_id : 1 });      // format in notes
+gradeSchema.createIndex({ class_id : 1 });      // format in lecture notes
 
 /* create a **single-field** index on "student_id" */
 // produce a single key descending index for "student_id" on gradeSchema
-gradeSchema.createIndex({ student: -1 });       // format in notes
+gradeSchema.createIndex({ student: -1 });       // format in lecture notes
 
 // alternative formats of above -- create **single-field** indices for "class_id" & "student_id"
 /* under the assumption there's a collection "gradeSchema" w/ documents featuring 
@@ -98,8 +98,10 @@ gradeSchema.createIndex({ student: -1 });       // format in notes
 // db.gradeSchema.createIndex({ student: -1});  // index in descending order
 
 // **compound** index on "student_id" and "class_id" in this order & in ascending order
+// ref: https://www.slingacademy.com/article/how-to-add-index-to-a-field-in-mongodb-with-examples/
 // db.gradeSchema.createIndex({ student_id: 1, class_id: 1});
 gradeSchema.createIndex({ student_id: 1, class_id: 1});
+
 
 // middlware
 app.use(bodyParser.urlencoded({extended: true}));

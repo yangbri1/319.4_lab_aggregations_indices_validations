@@ -31,8 +31,15 @@ router.post('/', gradesCTL.createGrades);
 router.get('/learner/:id/avg', gradesCTL.studentClassesAvg);
 
 /* -------------------------- lab routes start below ---------------------------- */
-// get number of learners w/ weighted avg > 70%
+
+/* get 1) number of learners w/ weighted avg > 70%, 
+       2) total number of students($divide: [document_count, 10]),
+       3) %-age of stduents w/ avg > 70% ( $divide: [#1, #2]) 
+if only the aggregation stages could be independent s.t. can get both count of documents & count of students > 70% in scores weighted avg */
 router.get('/grades/stats', gradesCTL_v2.getWeightedGrades);
+
+// get everything above but only for students within a class of "class_id"
+router.get('/grades/stats/:id', gradesCTL_v2.getWeightedGradesByClass);
 
 export default router;
 
