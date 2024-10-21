@@ -97,6 +97,10 @@ gradeSchema.createIndex({ student: -1 });       // format in notes
 // db.gradeSchema.createIndex({ class_id: 1 }); // index in ascending order
 // db.gradeSchema.createIndex({ student: -1});  // index in descending order
 
+// **compound** index on "student_id" and "class_id" in this order & in ascending order
+// db.gradeSchema.createIndex({ student_id: 1, class_id: 1});
+gradeSchema.createIndex({ student_id: 1, class_id: 1});
+
 // middlware
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({extended: true}));
