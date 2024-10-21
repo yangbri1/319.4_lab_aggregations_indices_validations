@@ -62,6 +62,9 @@ async function getWeightedGradesByClass(req, res){
         // 1. specify collection
         let collection = await db.collection("grades");
 
+        // take input "class_id" from query from given URL path
+        let query = {class_id: Number(req.params.id)};
+
         // 2. specify action -- aggregation pipeline conventionally is an array of objects stages
         let result = await collection.aggregate([
             // my other saved pipeline -- 2nd attempt but encounter BSONError similarly to when adding stages to aggregation pipeline on MongoDB Compass
@@ -110,11 +113,13 @@ async function getWeightedGradesByClass(req, res){
             }, {
               '$count': 'studentsAbove70'
             }
-          ]);
+          ]).find(query) // .find() array method (not MongoDB query I don't think ...) to find 1st instance of "query"
+
+          .toArray(); // .toArray() method require as we're dealing w/ an array of objects in aggregation pipeline
 
         // 3. return results
         res.json(result);
-        
+
         // (custom errors would be here)
         // ...
     } catch (err) {
